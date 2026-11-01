@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080e38">
+  <meta name="description" content="STUDIO — régie musicale V2 : automate, conducteur, programmation et banques sonores.">
+  <title>STUDIO — Régie musicale V2</title>
+  <link rel="stylesheet" href="./style.css?v=2.1">
+  <script src="./app.js?v=2.1" defer></script>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="masthead">
+      <div class="identity"><div class="identity-name">STUDIO<span class="slash">/</span><span class="identity-secondary">RÉGIE MUSICALE</span></div><div class="identity-small">AUTOMATION SYSTEM <span class="version">V2.1 • PROTOTYPE</span></div></div>
+      <div class="topbar-right"><span class="top-pill" id="storage-indicator">STOCKAGE LOCAL</span><span id="onair-indicator" class="onair-indicator">HORS ANTENNE</span><div class="timeblock"><div id="digital-clock" class="clock">--:--:--</div><small id="date-display">--/--/----</small></div></div>
+    </header>
+    <nav class="main-tabs" aria-label="Écrans de la régie">
+      <button class="tab current" data-screen="onair"><span class="tab-icon">●</span> ON AIR</button>
+      <button class="tab" data-screen="playlists"><span class="tab-icon">☷</span> PLAYLISTS</button>
+      <button class="tab" data-screen="banks"><span class="tab-icon">▦</span> BANQUES</button>
+      <button class="tab" data-screen="library"><span class="tab-icon">♫</span> MÉDIATHÈQUE</button>
+      <button class="tab" data-screen="settings"><span class="tab-icon">⚙</span> RÉGLAGES</button>
+      <button class="tab fullscreen-tab" id="fullscreen-btn" title="Plein écran">⛶ PLEIN ÉCRAN</button>
+    </nav>
+    <div class="warning" role="note"><strong>VERSION LOCALE DE DÉMARRAGE</strong> — Les fichiers audio et réglages sont enregistrés sur ce navigateur, pas dans GitHub. La synchronisation cloud entre ordinateurs et la diffusion garantie sans surveillance ne sont <strong>pas encore activées</strong>.</div>
+    <div class="message" id="message" role="status" aria-live="polite"></div>
+    <main>
+      <section data-page="onair" class="page">
+        <div class="onair-console" id="onair-console" aria-label="Régie ON AIR compacte">
+          <div class="console-topline">
+            <div class="console-station-clock"><span class="eyebrow">HEURE ANTENNE</span><strong id="onair-console-clock">--:--:--</strong><small id="onair-console-date">--/--/----</small></div>
+            <div class="console-program-title"><strong>STUDIO — ON AIR COMPACTE</strong><span>RÉGIE MUSICALE • V2.1</span></div>
+            <div class="console-next-status"><span class="eyebrow">PROCHAIN DÉPART ESTIMÉ</span><strong id="onair-next-clock">--:--:--</strong><small>ESTIMATION, NON GARANTIE</small></div>
+            <button id="onair-focus-btn" class="console-fullscreen-btn" title="Afficher uniquement la régie en plein écran">⛶ MODE ANTENNE</button>
+          </div>
+          <div class="console-onair-header">
+            <div class="console-onair-logo"><strong id="onair-large">STANDBY</strong><span>COMPACTE</span></div>
+            <div class="console-now"><span class="eyebrow">TITRE EN COURS</span><h1 id="now-playing">AUCUN TITRE EN COURS</h1><div id="now-detail">Sélectionne une playlist et lance la lecture</div></div>
+            <div class="console-remaining-top"><span class="eyebrow">AVANT LA FIN</span><strong id="time-remaining">00:00</strong><small id="time-elapsed">ÉCOULÉ : 00:00</small></div>
+          </div>
+          <div class="console-toolbar">
+            <div class="console-transport">
+              <button id="play-main" class="action green">▶ PLAY</button>
+              <button id="pause-main" class="action">Ⅱ PAUSE</button>
+              <button id="next-main" class="action blue">⏭ NEXT</button>
+              <button id="stop-main" class="action red">■ STOP</button>
+            </div>
+            <label class="checkbox"><input type="checkbox" id="auto-next" checked> AUTO</label>
+            <select id="onair-playlist" aria-label="Playlist en diffusion" title="Playlist en diffusion"></select>
+            <div class="volume-wrap"><label for="volume">MUSIQUE</label><input id="volume" type="range" min="0" max="100" value="90"><b id="volume-text">90%</b></div>
+          </div>
+          <div class="console-queue-header"><span>N°</span><span>DÉPART EST.</span><span>ÉLÉMENT / CONDUCTEUR</span><span>DURÉE</span><span>RESTANT</span><span>PLAY</span></div>
+          <div id="onair-queue" class="onair-list" role="list" aria-label="Conducteur ON AIR"></div>
+          <div class="console-bottom">
+            <div class="console-bottom-label"><strong>ON AIR</strong><span id="onair-bottom-title">COMPTE À REBOURS</span></div>
+            <strong id="onair-bottom-timer" class="console-bottom-timer">00:00:00</strong>
+            <span class="console-bottom-right">TEMPS RESTANT</span>
+            <div class="progress-bar console-progress" aria-label="Progression du média"><div id="progress-fill"></div></div>
+          </div>
+        </div>
+        <details class="onair-planning-details"><summary>Afficher les départs programmés et les consignes de sécurité</summary><div class="panel schedule-panel"><div class="panel-heading"><h2>DÉPARTS PROGRAMMÉS</h2><span class="panel-indicator green-dot">HORLOGE LOCALE</span></div><div id="onair-schedules" class="scheduled-list"></div><p class="tip">Les heures de la colonne DÉPART EST. sont indicatives et ne constituent pas une programmation. Pour programmer, ouvre l'onglet PLAYLISTS. Le navigateur doit rester ouvert, l'ordinateur actif et la lecture autorisée ; aucun départ n'est garanti en cas de veille.</p></div></details>
+      </section>
+
+      <section data-page="playlists" class="page" hidden><div class="page-title"><div><span class="eyebrow">CONDUCTEUR MULTI-PLAYLISTS</span><h1>PLAYLISTS & PROGRAMMATION</h1></div><span class="title-chip">MODIFICATIONS IMMÉDIATES</span></div>
+        <div class="columns playlist-layout"><div class="panel"><div class="panel-heading"><h2>ÉDITION DES PLAYLISTS</h2><span class="panel-indicator">PRÉPARATION</span></div><div class="toolbar"><select id="edit-playlist" aria-label="Playlist à modifier" class="grow"></select><button id="new-playlist" class="action small blue">+ NOUVELLE</button><button id="delete-playlist" class="action small danger-outline">SUPPR.</button></div><div class="add-row"><select id="media-to-add" class="grow" aria-label="Média à ajouter"></select><button id="add-to-playlist" class="action green small">+ AJOUTER</button></div><div class="queue-head edit-head"><span>N°</span><span>TITRE / FONDU (SEC.)</span><span>POSITION</span></div><div id="edit-items" class="scroll-list edit-list"></div></div>
+        <div class="panel"><div class="panel-heading"><h2>PROGRAMMER UN DÉPART</h2><span class="panel-indicator">AUTOMATION</span></div><label class="label" for="schedule-date">DATE ET HEURE</label><div class="toolbar"><input id="schedule-date" type="datetime-local" class="grow"><button id="add-schedule" class="action green small">+ PROGRAMMER</button></div><p class="tip">Le départ utilise la playlist sélectionnée. Si une autre est en cours, elle sera arrêtée. Aucun lancement tardif après une interruption prolongée.</p><div id="schedule-list" class="scheduled-list"></div></div></div>
+      </section>
+
+      <section data-page="banks" class="page" hidden>
+        <div class="page-title banks-title"><div><span class="eyebrow">DÉCLENCHEMENT INSTANTANÉ</span><h1>BANQUES SONORES</h1></div><div class="bank-count" id="bank-page">BANQUE 01 / 04</div></div>
+        <div class="banks-frame"><div id="pads-left" class="pad-grid" aria-label="Cases de banque gauche"></div>
+          <aside class="banks-middle"><div class="banks-middle-title">BANQUES</div><div id="banks-display" class="banks-display"><small>STUDIO / SOUND BANK</small><strong>AUCUN SON</strong><span>Clique sur EDIT pour assigner un média à une case.</span></div>
+            <div class="bank-volume-control"><label for="bank-volume">VOLUME BANQUES</label><div class="bank-fader"><input type="range" id="bank-volume" min="0" max="100" step="1" value="70" aria-label="Volume général des banques"><output id="bank-volume-text" for="bank-volume">70%</output></div><button id="bank-mute" class="bank-mute-btn" type="button" aria-pressed="false">🔊 SON ACTIF</button></div>
+            <div class="round-pair"><button class="round" id="bank-prev" title="Banque précédente">◀</button><button class="round" id="bank-next" title="Banque suivante">▶</button></div>
+            <div class="round-pair"><button class="round" id="bank-first" title="Revenir à la banque 1">ALL</button><button class="round" id="bank-clear" title="Mode effacement d'une case">CLS</button></div>
+            <div class="round-pair"><button class="round" id="bank-edit" title="Mode édition : affecter des médias">EDIT</button><button class="round" id="bank-update" title="Actualiser l'affichage">UPDATE</button></div>
+            <div class="round-pair"><button class="round" id="bank-stop" title="Stopper tous les sons de banque">STOP</button><button class="round" id="bank-stop-all" title="Arrêt général principal et banques">STOP ALL</button></div>
+            <div class="round-pair"><button class="round" disabled title="Enregistrement non disponible dans ce prototype">REC</button><button class="round" id="bank-search" title="Chercher un média">⌕</button></div>
+            <div class="round-pair"><button class="round" id="bank-config" title="Voir les raccourcis et réglages">CONFIG</button><button class="round" disabled title="Connexion cloud à venir">LOGIN</button></div>
+          </aside><div id="pads-right" class="pad-grid" aria-label="Cases de banque droite"></div></div>
+        <div class="bank-footer"><span id="bank-mode" class="title-chip">MODE DIFFUSION</span><span>F1–F10 : gauche · Maj + F1–F10 : droite · Alt + chiffres : alternative · Volume des banques indépendant</span></div>
+      </section>
+
+      <section data-page="library" class="page" hidden><div class="page-title"><div><span class="eyebrow">STOCKAGE DANS LE NAVIGATEUR</span><h1>MÉDIATHÈQUE</h1></div><span class="title-chip" id="media-count">0 MÉDIA</span></div>
+        <div class="columns library-layout"><div class="panel"><div class="panel-heading"><h2>IMPORTER DES FICHIERS AUDIO</h2></div><label class="file-import" for="audio-upload"><span class="file-icon">♫</span><strong>CHOISIR DES FICHIERS AUDIO</strong><small>MP3 · WAV · OGG · M4A (selon navigateur)</small></label><input id="audio-upload" type="file" multiple accept="audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac" hidden><p class="tip">Tu peux importer plusieurs médias en même temps. Ils seront conservés dans ce navigateur grâce à IndexedDB, sous réserve de l'espace disponible.</p><div class="subtle-rule"></div><button class="action danger-outline" id="delete-all">SUPPRIMER TOUS LES MÉDIAS LOCAUX</button></div><div class="panel"><div class="panel-heading"><h2>FICHIERS DISPONIBLES</h2></div><input id="search-media" type="search" class="full" placeholder="Rechercher un titre ou un jingle…"><div id="media-list" class="scroll-list media-list"></div></div></div>
+      </section>
+
+      <section data-page="settings" class="page" hidden><div class="page-title"><div><span class="eyebrow">PARAMÉTRAGE</span><h1>RÉGLAGES & SAUVEGARDE</h1></div><span class="title-chip">PARAMÈTRES LOCAUX</span></div>
+        <div class="columns settings-layout"><div class="panel"><div class="panel-heading"><h2>LECTURE</h2></div><div class="setting"><label for="default-crossfade">FONDU PAR DÉFAUT (SEC.)</label><input id="default-crossfade" type="number" value="2" min="0" max="15" step="0.5"></div><p class="tip">Chaque élément d'une playlist peut avoir sa propre durée de fondu.</p><div class="subtle-rule"></div><h2>EXPORT / IMPORT CONDUCTEUR</h2><div class="toolbar"><button id="export-settings" class="action blue">↓ EXPORTER JSON</button><label class="action" for="import-settings" tabindex="0">↑ IMPORTER JSON</label><input id="import-settings" type="file" accept=".json,application/json" hidden></div><p class="tip">L'export contient les playlists, banques, réglages et noms des médias, <strong>pas les fichiers audio</strong>. Sur un autre PC, il faut encore réimporter les fichiers correspondants.</p></div><div class="panel"><div class="panel-heading"><h2>RACCOURCIS CLAVIER</h2></div><div class="hotkey-row"><kbd>Espace</kbd><span>Lecture / pause</span></div><div class="hotkey-row"><kbd>N</kbd><span>Titre suivant</span></div><div class="hotkey-row"><kbd>S</kbd><span>STOP général</span></div><div class="hotkey-row"><kbd>F1 – F10</kbd><span>Déclencher 10 cases de gauche</span></div><div class="hotkey-row"><kbd>Maj + F1 – F10</kbd><span>Déclencher 10 cases de droite</span></div><div class="hotkey-row"><kbd>Alt + 1 … 0</kbd><span>Alternative gauche</span></div><div class="hotkey-row"><kbd>Alt + Maj + 1 … 0</kbd><span>Alternative droite</span></div><div class="hotkey-row"><kbd>Échap</kbd><span>Quitter le plein écran ON AIR</span></div><div class="hotkey-row"><kbd>Alt + B</kbd><span>Écran banques</span></div><p class="tip">Les raccourcis fonctionnent si l'onglet est au premier plan et hors champs de saisie. Le navigateur ou le système peut réserver certaines touches (dont F1).</p></div></div>
+      </section>
+    </main>
+    <footer>STUDIO / RÉGIE MUSICALE V2 <span>•</span> PROTOTYPE INDÉPENDANT <span>•</span> UTILISATION À L'ANTENNE : TESTS ET SÉCURITÉS NÉCESSAIRES</footer>
+  </div>
+  <dialog id="bank-dialog"><form method="dialog" id="bank-form"><h2>ÉDITION D'UNE CASE</h2><p id="bank-dialog-title"></p><label for="bank-assign">MÉDIA À AFFECTER</label><select id="bank-assign" class="full"></select><label for="bank-custom-label">TEXTE DE LA CASE (FACULTATIF)</label><input id="bank-custom-label" class="full" maxlength="32" placeholder="Ex. TOP HORAIRE"><label for="bank-slot-volume">VOLUME DE CETTE CASE <output id="bank-slot-volume-text" for="bank-slot-volume">100%</output></label><input id="bank-slot-volume" class="full" type="range" min="0" max="100" step="1" value="100"><div class="dialog-actions"><button type="button" id="bank-save" class="action green">ENREGISTRER</button><button type="button" id="bank-remove" class="action red">VIDER</button><button type="button" id="bank-cancel" class="action">ANNULER</button></div></form></dialog>
+</body>
+</html>
